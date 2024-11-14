@@ -66,3 +66,7 @@ drafts/
 # Luau tools
 /tools
 profile.*
+
+.lune
+scripts
+*.code-workspace

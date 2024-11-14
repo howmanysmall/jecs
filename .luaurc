@@ -2,7 +2,10 @@
     "aliases": {
         "jecs": "src",
         "testkit": "testkit",
-        "mirror": "mirror"
+        "mirror": "mirror",
+
+		"packages": ".lune/Packages",
+		"utilities": ".lune/Utilities"
     },
     "languageMode": "strict"
 }

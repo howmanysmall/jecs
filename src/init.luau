@@ -6,12 +6,12 @@
 type i53 = number
 type i24 = number
 
-type Ty = { i53 }
+type Ty = {i53}
 type ArchetypeId = number
 
-type Column = { any }
+type Column = {any}
 
-type Map<K, V> = { [K]: V }
+type Map<K, V> = {[K]: V}
 
 type GraphEdge = {
 	from: Archetype,
@@ -34,9 +34,9 @@ export type Archetype = {
 	node: GraphNode,
 	types: Ty,
 	type: string,
-	entities: { number },
-	columns: { Column },
-	records: { ArchetypeRecord },
+	entities: {number},
+	columns: {Column},
+	records: {ArchetypeRecord},
 }
 type Record = {
 	archetype: Archetype,
@@ -50,7 +50,7 @@ type ArchetypeRecord = {
 }
 
 type IdRecord = {
-	cache: { ArchetypeRecord },
+	cache: {ArchetypeRecord},
 	flags: number,
 	size: number,
 	hooks: {
@@ -62,7 +62,7 @@ type IdRecord = {
 
 type ComponentIndex = Map<i53, IdRecord>
 
-type Archetypes = { [ArchetypeId]: Archetype }
+type Archetypes = {[ArchetypeId]: Archetype}
 
 type ArchetypeDiff = {
 	added: Ty,
@@ -225,7 +225,7 @@ local function entity_index_new_id(entity_index: EntityIndex, data): i53
 	alive_count += 1
 	entity_index.alive_count = alive_count
 	dense_array[alive_count] = id
-	entity_index.sparse_array[id] = { dense = alive_count } :: Record
+	entity_index.sparse_array[id] = {dense = alive_count} :: Record
 
 	return id
 end
@@ -316,15 +316,15 @@ local function entity_move(entity_index: EntityIndex, entityId: i53, record: Rec
 	record.row = dst_row
 end
 
-local function hash(arr: { number }): string
+local function hash(arr: {number}): string
 	return table.concat(arr, "_")
 end
 
 local world_get: (world: World, entityId: i53, a: i53, b: i53?, c: i53?, d: i53?, e: i53?) -> ...any
 do
 	-- Keeping the function as small as possible to enable inlining
-	local records: { ArchetypeRecord }
-	local columns: { { any } }
+	local records: {ArchetypeRecord}
+	local columns: {{any}}
 	local row: number
 
 	local function fetch(id): any
@@ -497,14 +497,14 @@ local function id_record_ensure(world: World, id: number): IdRecord
 		)
 
 		idr = {
-			size = 0,
-			cache = {},
-			flags = flags,
+			size = 0;
+			cache = {};
+			flags = flags;
 			hooks = {
-				on_add = on_add,
-				on_set = on_set,
-				on_remove = on_remove,
-			},
+				on_add = on_add;
+				on_set = on_set;
+				on_remove = on_remove;
+			};
 		} :: IdRecord
 		componentIndex[id] = idr
 	end
@@ -521,7 +521,7 @@ local function archetype_append_to_records(
 )
 	local tr = idr.cache[archetype_id]
 	if not tr then
-		tr = { column = index, count = 1 }
+		tr = {column = index, count = 1}
 		idr.cache[archetype_id] = tr
 		idr.size += 1
 		records[id] = tr
@@ -530,14 +530,14 @@ local function archetype_append_to_records(
 	end
 end
 
-local function archetype_create(world: World, types: { i24 }, ty, prev: i53?): Archetype
+local function archetype_create(world: World, types: {i24}, ty, prev: i53?): Archetype
 	local archetype_id = (world.nextArchetypeId :: number) + 1
 	world.nextArchetypeId = archetype_id
 
 	local length = #types
-	local columns = (table.create(length) :: any) :: { Column }
+	local columns = (table.create(length) :: any) :: {Column}
 
-	local records: { ArchetypeRecord } = {}
+	local records: {ArchetypeRecord} = {}
 	for i, componentId in types do
 		local idr = id_record_ensure(world, componentId)
 		archetype_append_to_records(idr, archetype_id, records, componentId, i)
@@ -562,13 +562,13 @@ local function archetype_create(world: World, types: { i24 }, ty, prev: i53?): A
 	end
 
 	local archetype: Archetype = {
-		columns = columns,
-		node = { add = {}, remove = {}, refs = {} :: GraphEdge },
-		entities = {},
-		id = archetype_id,
-		records = records,
-		type = ty,
-		types = types,
+		columns = columns;
+		node = {add = {}, remove = {}, refs = {} :: GraphEdge};
+		entities = {};
+		id = archetype_id;
+		records = records;
+		type = ty;
+		types = types;
 	}
 
 	world.archetypeIndex[ty] = archetype
@@ -599,7 +599,7 @@ local function archetype_ensure(world: World, types): Archetype
 	return archetype_create(world, types, ty)
 end
 
-local function find_insert(types: { i53 }, toAdd: i53): number
+local function find_insert(types: {i53}, toAdd: i53): number
 	for i, id in types do
 		if id == toAdd then
 			return -1
@@ -617,7 +617,7 @@ local function find_archetype_with(world: World, node: Archetype, id: i53): Arch
 	-- them each time would be expensive. Instead this insertion sort can find the insertion
 	-- point in the types array.
 
-	local dst = table.clone(node.types) :: { i53 }
+	local dst = table.clone(node.types) :: {i53}
 	local at = find_insert(types, id)
 	if at == -1 then
 		-- If it finds a duplicate, it just means it is the same archetype so it can return it
@@ -858,7 +858,7 @@ local function world_remove(world: World, entity: i53, id: i53)
 	end
 end
 
-local function archetype_fast_delete_last(columns: { Column }, column_count: number, types: { i53 }, entity: i53)
+local function archetype_fast_delete_last(columns: {Column}, column_count: number, types: {i53}, entity: i53)
 	for i, column in columns do
 		if column ~= NULL_ARRAY then
 			column[column_count] = nil
@@ -866,7 +866,7 @@ local function archetype_fast_delete_last(columns: { Column }, column_count: num
 	end
 end
 
-local function archetype_fast_delete(columns: { Column }, column_count: number, row, types, entity)
+local function archetype_fast_delete(columns: {Column}, column_count: number, row, types, entity)
 	for i, column in columns do
 		if column ~= NULL_ARRAY then
 			column[row] = column[column_count]
@@ -1013,7 +1013,7 @@ local function world_cleanup(world: World)
 		end
 	end
 
-	local new_archetypes = table.create(#archetypes) :: { Archetype }
+	local new_archetypes = table.create(#archetypes) :: {Archetype}
 	local new_archetype_map = {}
 
 	for index, archetype in archetypes do
@@ -1141,15 +1141,15 @@ local EMPTY_LIST = {}
 local EMPTY_QUERY = {
 	__iter = function()
 		return NOOP
-	end,
+	end;
 	iter = function()
 		return NOOP
-	end,
-	with = ARM,
-	without = ARM,
+	end;
+	with = ARM;
+	without = ARM;
 	archetypes = function()
 		return EMPTY_LIST
-	end,
+	end;
 }
 
 setmetatable(EMPTY_QUERY, EMPTY_QUERY)
@@ -1401,7 +1401,7 @@ local function query_iter(query): () -> (number, ...any)
 	return query_next
 end
 
-local function query_without(query: { compatible_archetypes: { Archetype } }, ...)
+local function query_without(query: {compatible_archetypes: {Archetype}}, ...)
 	local compatible_archetypes = query.compatible_archetypes
 	local N = select("#", ...)
 	for i = #compatible_archetypes, 1, -1 do
@@ -1433,7 +1433,7 @@ local function query_without(query: { compatible_archetypes: { Archetype } }, ..
 	return query :: any
 end
 
-local function query_with(query: { compatible_archetypes: { Archetype } }, ...)
+local function query_with(query: {compatible_archetypes: {Archetype}}, ...)
 	local compatible_archetypes = query.compatible_archetypes
 	local N = select("#", ...)
 	for i = #compatible_archetypes, 1, -1 do
@@ -1482,7 +1482,7 @@ local function world_query(world: World, ...)
 	local compatible_archetypes = {}
 	local length = 0
 
-	local ids = { ... }
+	local ids = {...}
 
 	local archetypes = world.archetypes
 
@@ -1534,8 +1534,8 @@ local function world_query(world: World, ...)
 	end
 
 	local q = setmetatable({
-		compatible_archetypes = compatible_archetypes,
-		ids = ids,
+		compatible_archetypes = compatible_archetypes;
+		ids = ids;
 	}, Query) :: any
 
 	return q
@@ -1665,20 +1665,20 @@ end
 
 function World.new()
 	local entity_index: EntityIndex = {
-		dense_array = {} :: { [i24]: i53 },
-		sparse_array = {} :: { [i53]: Record },
-		alive_count = 0,
-		max_id = 0,
+		dense_array = {} :: {[i24]: i53};
+		sparse_array = {} :: {[i53]: Record};
+		alive_count = 0;
+		max_id = 0;
 	}
 	local self = setmetatable({
-		archetypeIndex = {} :: { [string]: Archetype },
-		archetypes = {} :: Archetypes,
-		componentIndex = {} :: ComponentIndex,
-		entity_index = entity_index,
-		nextArchetypeId = 0 :: number,
-		nextComponentId = 0 :: number,
-		nextEntityId = 0 :: number,
-		ROOT_ARCHETYPE = (nil :: any) :: Archetype,
+		archetypeIndex = {} :: {[string]: Archetype};
+		archetypes = {} :: Archetypes;
+		componentIndex = {} :: ComponentIndex;
+		entity_index = entity_index;
+		nextArchetypeId = 0 :: number;
+		nextComponentId = 0 :: number;
+		nextEntityId = 0 :: number;
+		ROOT_ARCHETYPE = (nil :: any) :: Archetype;
 	}, World) :: any
 
 	self.ROOT_ARCHETYPE = archetype_create(self, {}, "")
@@ -1738,21 +1738,21 @@ export type Pair<First, Second> = number & {
 
 type Item<T...> = (self: Query<T...>) -> (Entity, T...)
 
-export type Entity<T = nil> = number & { __T: T }
+export type Entity<T = nil> = number & {__T: T}
 
 type Iter<T...> = (query: Query<T...>) -> () -> (Entity, T...)
 
 type Query<T...> = typeof(setmetatable({}, {
-	__iter = (nil :: any) :: Iter<T...>,
+	__iter = (nil :: any) :: Iter<T...>;
 })) & {
 	iter: Iter<T...>,
 	with: (self: Query<T...>, ...i53) -> Query<T...>,
 	without: (self: Query<T...>, ...i53) -> Query<T...>,
-	archetypes: (self: Query<T...>) -> { Archetype },
+	archetypes: (self: Query<T...>) -> {Archetype},
 }
 
 export type World = {
-	archetypeIndex: { [string]: Archetype },
+	archetypeIndex: {[string]: Archetype},
 	archetypes: Archetypes,
 	componentIndex: ComponentIndex,
 	entity_index: EntityIndex,
@@ -1838,54 +1838,54 @@ export type World = {
 }
 
 return {
-	World = World :: { new: () -> World },
+	World = World :: {new: () -> World};
 
-	OnAdd = EcsOnAdd :: Entity<(entity: Entity) -> ()>,
-	OnRemove = EcsOnRemove :: Entity<(entity: Entity) -> ()>,
-	OnSet = EcsOnSet :: Entity<(entity: Entity, data: any) -> ()>,
-	ChildOf = EcsChildOf :: Entity,
-	Component = EcsComponent :: Entity,
-	Wildcard = EcsWildcard :: Entity,
-	w = EcsWildcard :: Entity,
-	OnDelete = EcsOnDelete :: Entity,
-	OnDeleteTarget = EcsOnDeleteTarget :: Entity,
-	Delete = EcsDelete :: Entity,
-	Remove = EcsRemove :: Entity,
-	Name = EcsName :: Entity<string>,
-	Rest = EcsRest :: Entity,
+	OnAdd = EcsOnAdd :: Entity<(entity: Entity) -> ()>;
+	OnRemove = EcsOnRemove :: Entity<(entity: Entity) -> ()>;
+	OnSet = EcsOnSet :: Entity<(entity: Entity, data: any) -> ()>;
+	ChildOf = EcsChildOf :: Entity;
+	Component = EcsComponent :: Entity;
+	Wildcard = EcsWildcard :: Entity;
+	w = EcsWildcard :: Entity;
+	OnDelete = EcsOnDelete :: Entity;
+	OnDeleteTarget = EcsOnDeleteTarget :: Entity;
+	Delete = EcsDelete :: Entity;
+	Remove = EcsRemove :: Entity;
+	Name = EcsName :: Entity<string>;
+	Rest = EcsRest :: Entity;
 
-	pair = ECS_PAIR :: <P, O>(first: P, second: O) -> Pair<P, O>,
+	pair = ECS_PAIR :: <P, O>(first: P, second: O) -> Pair<P, O>;
 
 	-- Inwards facing API for testing
-	ECS_ID = ECS_ENTITY_T_LO,
-	ECS_GENERATION_INC = ECS_GENERATION_INC,
-	ECS_GENERATION = ECS_GENERATION,
-	ECS_ID_IS_WILDCARD = ECS_ID_IS_WILDCARD,
+	ECS_ID = ECS_ENTITY_T_LO;
+	ECS_GENERATION_INC = ECS_GENERATION_INC;
+	ECS_GENERATION = ECS_GENERATION;
+	ECS_ID_IS_WILDCARD = ECS_ID_IS_WILDCARD;
 
-	IS_PAIR = ECS_IS_PAIR,
-	pair_first = ecs_pair_first,
-	pair_second = ecs_pair_second,
-	entity_index_get_alive = entity_index_get_alive,
+	IS_PAIR = ECS_IS_PAIR;
+	pair_first = ecs_pair_first;
+	pair_second = ecs_pair_second;
+	entity_index_get_alive = entity_index_get_alive;
 
-	archetype_append_to_records = archetype_append_to_records,
-	id_record_ensure = id_record_ensure,
-	archetype_create = archetype_create,
-	archetype_ensure = archetype_ensure,
-	find_insert = find_insert,
-	find_archetype_with = find_archetype_with,
-	find_archetype_without = find_archetype_without,
-	archetype_init_edge = archetype_init_edge,
-	archetype_ensure_edge = archetype_ensure_edge,
-	init_edge_for_add = init_edge_for_add,
-	init_edge_for_remove = init_edge_for_remove,
-	create_edge_for_add = create_edge_for_add,
-	create_edge_for_remove = create_edge_for_remove,
-	archetype_traverse_add = archetype_traverse_add,
-	archetype_traverse_remove = archetype_traverse_remove,
+	archetype_append_to_records = archetype_append_to_records;
+	id_record_ensure = id_record_ensure;
+	archetype_create = archetype_create;
+	archetype_ensure = archetype_ensure;
+	find_insert = find_insert;
+	find_archetype_with = find_archetype_with;
+	find_archetype_without = find_archetype_without;
+	archetype_init_edge = archetype_init_edge;
+	archetype_ensure_edge = archetype_ensure_edge;
+	init_edge_for_add = init_edge_for_add;
+	init_edge_for_remove = init_edge_for_remove;
+	create_edge_for_add = create_edge_for_add;
+	create_edge_for_remove = create_edge_for_remove;
+	archetype_traverse_add = archetype_traverse_add;
+	archetype_traverse_remove = archetype_traverse_remove;
 
-	entity_index_try_get = entity_index_try_get,
-	entity_index_try_get_any = entity_index_try_get_any,
-	entity_index_is_alive = entity_index_is_alive,
-	entity_index_remove = entity_index_remove,
-	entity_index_new_id = entity_index_new_id,
+	entity_index_try_get = entity_index_try_get;
+	entity_index_try_get_any = entity_index_try_get_any;
+	entity_index_is_alive = entity_index_is_alive;
+	entity_index_remove = entity_index_remove;
+	entity_index_new_id = entity_index_new_id;
 }
