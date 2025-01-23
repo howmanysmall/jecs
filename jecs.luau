@@ -574,7 +574,7 @@ local function archetype_append_to_records(
 	end
 end
 
-local function archetype_create(world: World, id_types: {i24}, ty, prev: i53?): Archetype
+local function archetype_create(world: World, id_types: {i24}, ty, _prev: i53?): Archetype
 	local archetype_id = (world.nextArchetypeId :: number) + 1
 	world.nextArchetypeId = archetype_id
 
@@ -709,7 +709,7 @@ local function archetype_init_edge(archetype: Archetype, edge: GraphEdge, id: i5
 	edge.id = id
 end
 
-local function archetype_ensure_edge(world, edges: GraphEdges, id): GraphEdge
+local function archetype_ensure_edge(_world, edges: GraphEdges, id): GraphEdge
 	local edge = edges[id]
 	if not edge then
 		edge = {} :: GraphEdge
@@ -919,16 +919,16 @@ local function world_remove(world: World, entity: i53, id: i53)
 	end
 end
 
-local function archetype_fast_delete_last(columns: {Column}, column_count: number, types: {i53}, entity: i53)
-	for i, column in columns do
+local function archetype_fast_delete_last(columns: {Column}, column_count: number, _types: {i53}, _entity: i53)
+	for _i, column in columns do
 		if column ~= NULL_ARRAY then
 			column[column_count] = nil
 		end
 	end
 end
 
-local function archetype_fast_delete(columns: {Column}, column_count: number, row, types, entity)
-	for i, column in columns do
+local function archetype_fast_delete(columns: {Column}, column_count: number, row, _types, _entity)
+	for _i, column in columns do
 		if column ~= NULL_ARRAY then
 			column[row] = column[column_count]
 			column[column_count] = nil
@@ -936,7 +936,7 @@ local function archetype_fast_delete(columns: {Column}, column_count: number, ro
 	end
 end
 
-local function archetype_delete(world: World, archetype: Archetype, row: number, destruct: boolean?)
+local function archetype_delete(world: World, archetype: Archetype, row: number, _destruct: boolean?)
 	local entityIndex = world.entity_index
 	local columns = archetype.columns
 	local id_types = archetype.types
@@ -1225,6 +1225,7 @@ end
 
 local function NOOP() end
 
+-- selene: allow(unused_variable)
 local function ARM(query, ...)
 	return query
 end
@@ -1634,14 +1635,14 @@ local function query_cached(query: QueryInner)
 		on_delete_action[A] = query_cache_on_delete
 	end
 
-	local function on_create_callback(archetype)
-		table.insert(archetypes, archetype)
+	local function on_create_callback(newArchetype)
+		table.insert(archetypes, newArchetype)
 	end
 
-	local function on_delete_callback(archetype)
-		local i = table.find(archetypes, archetype) :: number
+	local function on_delete_callback(newArchetype)
+		local index = table.find(archetypes, newArchetype) :: number
 		local n = #archetypes
-		archetypes[i] = archetypes[n]
+		archetypes[index] = archetypes[n]
 		archetypes[n] = nil
 	end
 
@@ -1952,7 +1953,7 @@ local function world_query(world: World, ...)
 
 		local skip = false
 
-		for i, id in ids do
+		for _i, id in ids do
 			local tr = records[id]
 			if not tr then
 				skip = true
@@ -2159,12 +2160,12 @@ function World.new()
 
 	self.ROOT_ARCHETYPE = archetype_create(self, {}, "")
 
-	for i = 1, HI_COMPONENT_ID do
+	for _i = 1, HI_COMPONENT_ID do
 		local e = entity_index_new_id(entity_index)
 		world_add(self, e, EcsComponent)
 	end
 
-	for i = HI_COMPONENT_ID + 1, EcsRest do
+	for _i = HI_COMPONENT_ID + 1, EcsRest do
 		-- Initialize built-in components
 		entity_index_new_id(entity_index)
 	end
@@ -2195,7 +2196,7 @@ function World.new()
 end
 
 export type Id<T = nil> =
-	    | Entity<T>
+													    | Entity<T>
 	| Pair<Entity<T>, Entity>
 	| Pair<Entity, Entity<T>>
 	| Pair<Entity<T>, Entity<unknown>>
